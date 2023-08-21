@@ -1,0 +1,95 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyNjiBujnzw/QUoEWSSXvnZB",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/ApurvaMishra4038/element/blob/main/scrab%20the%20pinterest\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "tY0D8uKcjFJf"
+      },
+      "outputs": [],
+      "source": [
+        "import requests\n",
+        "from bs4 import BeautifulSoup\n",
+        "import csv\n",
+        "\n",
+        "def get_image_urls(tags):\n",
+        "  \"\"\"\n",
+        "  Extracts image URLs from Pinterest based on the provided tags.\n",
+        "\n",
+        "  Args:\n",
+        "    tags: A list of tags.\n",
+        "\n",
+        "  Returns:\n",
+        "    A list of image URLs.\n",
+        "  \"\"\"\n",
+        "\n",
+        "  image_urls = []\n",
+        "\n",
+        "  for tag in tags:\n",
+        "    url = \"https://www.pinterest.com/search/pins/?q=\" + tag\n",
+        "    page = requests.get(url)\n",
+        "    soup = BeautifulSoup(page.content, \"html.parser\")\n",
+        "\n",
+        "    for img in soup.find_all(\"img\"):\n",
+        "      if img.get(\"src\") and \"/pin/\" in img.get(\"src\"):\n",
+        "        image_urls.append(img.get(\"src\"))\n",
+        "\n",
+        "  return image_urls\n",
+        "\n",
+        "def save_image_urls(image_urls, filename):\n",
+        "  \"\"\"\n",
+        "  Saves the extracted image URLs to a CSV file.\n",
+        "\n",
+        "  Args:\n",
+        "    image_urls: A list of image URLs.\n",
+        "    filename: The name of the CSV file.\n",
+        "  \"\"\"\n",
+        "\n",
+        "  with open(filename, \"w\") as csvfile:\n",
+        "    writer = csv.writer(csvfile)\n",
+        "    writer.writerow([\"Image URL\"])\n",
+        "    for image_url in image_urls:\n",
+        "      writer.writerow([image_url])\n",
+        "\n",
+        "def main():\n",
+        "  \"\"\"\n",
+        "  The main function.\n",
+        "  \"\"\"\n",
+        "\n",
+        "  tags = input(\"Enter the Pinterest tags: \").split(\",\")\n",
+        "  image_urls = get_image_urls(tags)\n",
+        "  filename = input(\"Enter the name of the CSV file: \")\n",
+        "  save_image_urls(image_urls, filename)\n",
+        "\n",
+        "if __name__ == \"__main__\":\n",
+        "  main()\n"
+      ]
+    }
+  ]
+}
